@@ -1,5 +1,3 @@
-console.log('starting envato script')
-
 (()=>{
     const assetsSelector = '[data-test-selector="item-card"]'
     const downloadButtonSelector = '[data-test-selector="item-card-download-button"]'
@@ -16,6 +14,8 @@ console.log('starting envato script')
         asset.addEventListener('mouseenter', (event)=>{
             const downloadButton = asset.querySelector(downloadButtonSelector)
             store.downloadButton = downloadButton
+    
+            downloadButton.style.boxShadow = `12px 12px 12px maroon`
         }
         )
     }
@@ -39,9 +39,6 @@ console.log('starting envato script')
     }
     )
 
-    setInterval(()=>console.log(store.downloadButton), 1000)
 
 }
 )()
-
-automaNextBlock({})
