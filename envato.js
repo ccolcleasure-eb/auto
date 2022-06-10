@@ -15,14 +15,14 @@
             const downloadButton = asset.querySelector(downloadButtonSelector)
             store.downloadButton = downloadButton
     
-            downloadButton.style.boxShadow = `12px 12px 12px maroon`
+            downloadButton.style.boxShadow = '12px 12px 12px red'
+            downloadButton.style.border = '1px solid orange'
         }
         )
     }
     )
 
     document.addEventListener('keydown', (event)=>{
-        console.log('...', event.code)
         if (event.code === 'KeyD') {
             console.log(store.downloadButton)
             store.downloadButton.click()
