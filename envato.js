@@ -35,7 +35,7 @@
 
   const indicateOwned = () => {
     getPageAssets().forEach((asset) => {
-      const assetLink = activeAsset.querySelector('a[title]')
+      const assetLink = store.activeAsset.querySelector('a[title]')
       const downloadId = assetLink.href
       const ownedAssets = getOwnedAssets()
 
@@ -50,7 +50,7 @@
     indicateOwned()
 
     Array.from(assets).forEach((asset) => {
-      const assetLink = activeAsset.querySelector('a[title]')
+      const assetLink = store.activeAsset.querySelector('a[title]')
       const downloadIcon = asset.querySelector(downloadIconSelector)
       const addIcon = asset.querySelector('[alt="Add to collection"]')
       const originalBoxShadow = downloadIcon.style.boxShadow
