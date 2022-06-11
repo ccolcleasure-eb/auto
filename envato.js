@@ -3,6 +3,7 @@
   const downloadIconSelector = '[data-test-selector="item-card-download-button"]'
   const collectionSelector = '[data-test-selector="existing-project-name"]'
   const downloadButtonSelector = '[data-test-selector="project-add-and-download-button"]'
+  const addButtonSelector = '[data-test-selector="collection-action-button-add"]'
 
   const sleep = (duration) => {
     return new Promise((resolve) => {
@@ -29,6 +30,7 @@
     activeAsset: null,
     downloadIcon: null,
     downloadId: null,
+    addIcon: null,
   }
 
   const indicateOwned = () => {
@@ -50,6 +52,7 @@
     Array.from(assets).forEach((asset) => {
       const assetLink = activeAsset.querySelector('a[title]')
       const downloadIcon = asset.querySelector(downloadIconSelector)
+      const addIcon = asset.querySelector('[alt="Add to collection"]')
       const originalBoxShadow = downloadIcon.style.boxShadow
       const originalBorder = downloadIcon.style.border
 
@@ -57,6 +60,8 @@
         store.activeAsset = asset
         store.downloadIcon = downloadIcon
         store.downloadId = assetLink.href
+        store.addIcon = addIcon
+
         asset.style.boxShadow = '8px 8px 8px red'
         asset.style.border = '1px solid orange'
       }
@@ -74,6 +79,12 @@
     })
 
     const handleKeydown = async (event) => {
+      if (event.code === 'KeyA') {
+        store.addIcon.click()
+        const addButton = document.querySelector(addButtonSelector)
+        store.addIcon.click()
+      }
+
       if (event.code !== 'KeyD') return
       console.log('downloading')
 
