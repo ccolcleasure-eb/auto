@@ -1,44 +1,105 @@
-(()=>{
-    const assetsSelector = '[data-test-selector="item-card"]'
-    const downloadButtonSelector = '[data-test-selector="item-card-download-button"]'
-    const collectionSelector = '[data-test-selector="existing-project-name"]'
-    const finalButtonSelector = '[data-test-selector="project-add-and-download-button"]'
+;(() => {
+  const assetsSelector = '[data-test-selector="item-card"]'
+  const downloadIconSelector = '[data-test-selector="item-card-download-button"]'
+  const collectionSelector = '[data-test-selector="existing-project-name"]'
+  const downloadButtonSelector = '[data-test-selector="project-add-and-download-button"]'
 
-    const assets = Array.from(document.querySelectorAll(assetsSelector))
+  const sleep = (duration) => {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(), duration)
+    })
+  }
 
-    const store = {
-        downloadButton: null,
+  const getOwnedAssets = () => {
+    const ownedAssetsString = localStorage.getItem('ownedAssets')
+    return ownedAssetsString?.split('🖤') || []
+  }
+
+  const updateOwnedAssets = (downloadId) => {
+    const ownedAssets = getOwnedAssets()
+    const updatedAssets = [...ownedAssets, downloadId]
+    localStorage.setItem('ownedAssets', updatedAssets.join('🖤'))
+  }
+
+  const getPageAssets = () => {
+    return Array.from(document.querySelectorAll(assetsSelector))
+  }
+
+  const store = {
+    activeAsset: null,
+    downloadIcon: null,
+    downloadId: null,
+  }
+
+  const indicateOwned = () => {
+    getPageAssets.forEach((asset) => {
+      const assetLink = activeAsset.querySelector('a[title]')
+      const downloadId = assetLink.href
+      const ownedAssets = getOwnedAssets()
+
+      if (ownedAssets.includes(downloadId)) {
+        asset.style.opacity = '50%'
+      }
+    })
+  }
+
+  const initiate = () => {
+    const assets = getPageAssets()
+    indicateOwned()
+
+    Array.from(assets).forEach((asset) => {
+      const assetLink = activeAsset.querySelector('a[title]')
+      const downloadIcon = asset.querySelector(downloadIconSelector)
+      const originalBoxShadow = downloadIcon.style.boxShadow
+      const originalBorder = downloadIcon.style.border
+
+      const onMouseEnter = () => {
+        store.activeAsset = asset
+        store.downloadIcon = downloadIcon
+        store.downloadId = assetLink.href
+        asset.style.boxShadow = '8px 8px 8px red'
+        asset.style.border = '1px solid orange'
+      }
+
+      const onMouseLeave = () => {
+        store.activeAsset = null
+        store.downloadIcon = null
+
+        asset.style.boxShadow = originalBoxShadow
+        asset.style.border = originalBorder
+      }
+
+      asset.addEventListener('mouseenter', onMouseEnter)
+      asset.addEventListener('mouseleave', onMouseLeave)
+    })
+
+    const handleKeydown = async (event) => {
+      if (event.code !== 'KeyD') return
+      console.log('downloading')
+
+      store.downloadIcon.click()
+      await sleep(400)
+
+      const collection = document.querySelector(collectionSelector)
+      const downloadButton = document.querySelector(downloadButtonSelector)
+
+      await sleep(250)
+      collection.click()
+
+      await sleep(375)
+      downloadButton.click()
+      updateOwnedAssets(store.downloadId)
     }
 
-    Array.from(assets).forEach((asset)=>{
-        asset.addEventListener('mouseenter', (event)=>{
-            const downloadButton = asset.querySelector(downloadButtonSelector)
-            store.downloadButton = downloadButton
-    
-            downloadButton.style.boxShadow = '12px 12px 12px red'
-            downloadButton.style.border = '1px solid orange'
-        }
-        )
-    }
-    )
+    document.addEventListener('keydown', handleKeydown)
+  }
 
-    document.addEventListener('keydown', (event)=>{
-        if (event.code === 'KeyD') {
-            console.log(store.downloadButton)
-            store.downloadButton.click()
+  initiate()
 
-            setTimeout(()=>{
-                const collection = document.querySelector(collectionSelector)
-                collection.click()
+  const url = window.location.href
 
-                const finalButton = document.querySelector(finalButtonSelector)
-                finalButton.click()
-            }
-            , 500)
-        }
-    }
-    )
-
-
-}
-)()
+  setInterval(() => {
+    const newUrl = window.location.href
+    url !== newUrl && initiate()
+  })
+})()
