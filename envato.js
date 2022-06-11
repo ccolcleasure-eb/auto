@@ -33,14 +33,19 @@
     addIcon: null,
   }
 
+  const checkAssetOwned = (downloadId) => {
+    const ownedAssets = getOwnedAssets()
+    return ownedAssets.includes(downloadId)
+  }
+
   const indicateOwned = () => {
     getPageAssets().forEach((asset) => {
       const assetLink = asset.querySelector('a[title]')
       const downloadId = assetLink.href
       const ownedAssets = getOwnedAssets()
 
-      if (ownedAssets.includes(downloadId)) {
-        asset.style.opacity = '50%'
+      if (checkAssetOwned(downloadId)) {
+        asset.style.opacity = '10%'
       }
     })
   }
@@ -50,7 +55,7 @@
     indicateOwned()
 
     Array.from(assets).forEach((asset) => {
-      const assetLink = store.activeAsset.querySelector('a[title]')
+      const assetLink = asset.querySelector('a[title]')
       const downloadIcon = asset.querySelector(downloadIconSelector)
       const addIcon = asset.querySelector('[alt="Add to collection"]')
       const originalBoxShadow = downloadIcon.style.boxShadow
@@ -69,6 +74,8 @@
       const onMouseLeave = () => {
         store.activeAsset = null
         store.downloadIcon = null
+        store.downloadId = null
+        store.addIcon = null
 
         asset.style.boxShadow = originalBoxShadow
         asset.style.border = originalBorder
@@ -80,26 +87,34 @@
 
     const handleKeydown = async (event) => {
       if (event.code === 'KeyA') {
+        console.log(Object.values(store))
         store.addIcon.click()
+        await sleep(400)
         const addButton = document.querySelector(addButtonSelector)
+        addButton.click()
+        await sleep(100)
         store.addIcon.click()
+        await sleep(400)
+        return
       }
 
-      if (event.code !== 'KeyD') return
-      console.log('downloading')
+      if (event.code === 'KeyD') {
+        if (checkAssetOwned(store.downloadId)) return
+        console.log('downloading')
 
-      store.downloadIcon.click()
-      await sleep(400)
+        store.downloadIcon.click()
+        await sleep(400)
 
-      const collection = document.querySelector(collectionSelector)
-      const downloadButton = document.querySelector(downloadButtonSelector)
+        const collection = document.querySelector(collectionSelector)
+        const downloadButton = document.querySelector(downloadButtonSelector)
 
-      await sleep(250)
-      collection.click()
+        await sleep(250)
+        collection.click()
 
-      await sleep(375)
-      downloadButton.click()
-      updateOwnedAssets(store.downloadId)
+        await sleep(375)
+        downloadButton.click()
+        updateOwnedAssets(store.downloadId)
+      }
     }
 
     document.addEventListener('keydown', handleKeydown)
