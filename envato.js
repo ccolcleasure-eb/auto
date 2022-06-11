@@ -32,7 +32,7 @@
   }
 
   const indicateOwned = () => {
-    getPageAssets.forEach((asset) => {
+    getPageAssets().forEach((asset) => {
       const assetLink = activeAsset.querySelector('a[title]')
       const downloadId = assetLink.href
       const ownedAssets = getOwnedAssets()
