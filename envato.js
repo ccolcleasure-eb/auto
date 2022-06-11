@@ -1,4 +1,5 @@
-;(() => {
+(() => {
+  // well hello
   const assetsSelector = '[data-test-selector="item-card"]'
   const downloadIconSelector = '[data-test-selector="item-card-download-button"]'
   const collectionSelector = '[data-test-selector="existing-project-name"]'
